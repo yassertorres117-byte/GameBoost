@@ -6,6 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip -q GameBoostLauncher.zip
+      - name: Corregir atributos
+        run: sed -i 's/format24Hr/format24Hour/g; s/format12Hr/format12Hour/g' GameBoostLauncher/app/src/main/res/layout/activity_main.xml
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
