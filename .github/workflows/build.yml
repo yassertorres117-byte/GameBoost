@@ -1,25 +1,28 @@
 name: Build APK
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q GameBoostLauncher.zip
-      - name: Corregir atributos
-        run: sed -i 's/format24Hr/format24Hour/g; s/format12Hr/format12Hour/g' GameBoostLauncher/app/src/main/res/layout/activity_main.xml
+      - name: Descomprimir proyecto
+        run: unzip -q CyberHUD-proyecto.zip
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - name: Aceptar licencias
-        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
-      - run: gradle assembleDebug --no-daemon
-        working-directory: GameBoostLauncher
+      - name: Compilar APK
+        working-directory: CyberHUD
+        run: gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
-          name: APK
-          path: GameBoostLauncher/app/build/outputs/apk/debug/app-debug.apk
+          name: CyberHUD-APK
+          path: CyberHUD/app/build/outputs/apk/debug/app-debug.apk
+      
