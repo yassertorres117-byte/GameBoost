@@ -14,15 +14,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-    #  - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
       - name: Compilar APK
         working-directory: CyberHUD
-        run: gradle assembleDebug --no-daemon
+        shell: bash
+        run: gradle assembleDebug --no-daemon 2>&1 | tee build.log
+      - name: Mostrar errores
+        if: failure()
+        working-directory: CyberHUD
+        run: |
+          echo "===== ERRORES ====="
+          grep -A2 "^e: " build.log | sed 's#.*/cyberhud/##' | head -150
       - uses: actions/upload-artifact@v4
         with:
           name: CyberHUD-APK
           path: CyberHUD/app/build/outputs/apk/debug/app-debug.apk
-      
